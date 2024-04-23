@@ -36,12 +36,13 @@ public class UIHandler : MonoBehaviour
         resultInfo.text = "x";
 
         GameController.instance.ResetStatesArray();
-        ResetGameButtons();
+        ChangeButtonEnableState(true);
     }
     public void ShowGameResult(bool tie, bool xTurn)
     {
         resultImage.gameObject.SetActive(true);
         SetSprite(resultImage, Symbols.Empty);
+        ChangeButtonEnableState(false);
 
         if (!tie)
         {
@@ -58,14 +59,14 @@ public class UIHandler : MonoBehaviour
         Symbols buttonState = SetButtonSymbol(GameController.instance.xTurn, button);
         GameController.instance.ButtonPressed(id, buttonState);
     }
-    private void ResetGameButtons()
+    private void ChangeButtonEnableState(bool enabled)
     {
         for (int i = 0; i < buttons.Length; i++)
         {
             for (int j = 0; j < buttons[i].Length; j++)
             {
-                buttons[i][j].enabled = true;
-                SetSprite(buttons[i][j], Symbols.Empty);
+                buttons[i][j].enabled = enabled;
+                if (enabled) SetSprite(buttons[i][j], Symbols.Empty);     
             }
         }
     }
