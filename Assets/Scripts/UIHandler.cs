@@ -18,8 +18,10 @@ public class UIHandler : MonoBehaviour
         resultInfo = infoPanel.GetComponentInChildren<Text>();
         resultImage = infoPanel.GetComponentInChildren<Image>();
         GameButtonsToArray();
+        ChangeButtonEnableState(false);
         Menu();
     }
+
     private void Menu()
     {
         infoPanel.SetActive(true);
@@ -28,6 +30,7 @@ public class UIHandler : MonoBehaviour
         Button button = menuPanel.GetComponentInChildren<Button>();
         button.onClick.AddListener(StartGame);
     }
+
     private void StartGame()
     {
         menuPanel.SetActive(false);
@@ -38,6 +41,7 @@ public class UIHandler : MonoBehaviour
         GameController.instance.ResetStatesArray();
         ChangeButtonEnableState(true);
     }
+
     public void ShowGameResult(bool win, bool xTurn)
     {
         resultImage.gameObject.SetActive(true);
@@ -54,6 +58,7 @@ public class UIHandler : MonoBehaviour
 
         Menu();
     }
+
     private void OnButtonClick(Button button, int[] id)
     {
         Symbols buttonState = SetButtonSymbol(GameController.instance.xTurn, button);
@@ -70,6 +75,7 @@ public class UIHandler : MonoBehaviour
             }
         }
     }
+
     private void GameButtonsToArray()
     {
         Button[] allButtons = gamePanel.GetComponentsInChildren<Button>();
@@ -87,6 +93,7 @@ public class UIHandler : MonoBehaviour
             }
         }
     }
+
     private Symbols SetButtonSymbol(bool xTurn, Button button)
     {
         Symbols symbol = Symbols.Empty;
@@ -107,6 +114,7 @@ public class UIHandler : MonoBehaviour
         }
         return symbol;
     }
+
     private Sprite GetSprite(string name)
     {
         foreach (Sprite image in sprites)
@@ -115,6 +123,7 @@ public class UIHandler : MonoBehaviour
         }
         return null;
     }
+
     public void SetSprite(Button button, Symbols symbol)
     {
         switch (symbol)

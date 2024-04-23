@@ -18,6 +18,7 @@ public class GameController : MonoBehaviour
         new int[] {0, 4, 8},
         new int[] {2, 4, 6}
     };
+
     public void Initialize()
     {
         if (instance == null)
@@ -28,6 +29,7 @@ public class GameController : MonoBehaviour
         }
         Destroy(gameObject);
     }
+
     void Awake()
     {
         Initialize();
@@ -36,6 +38,7 @@ public class GameController : MonoBehaviour
         uiHandler = FindFirstObjectByType<UIHandler>();
 
     }
+
     public void ResetStatesArray()
     {
         xTurn = true;
@@ -48,6 +51,7 @@ public class GameController : MonoBehaviour
             }
         }
     }
+
     private bool IsGridFilled()
     {
         {
@@ -61,12 +65,14 @@ public class GameController : MonoBehaviour
             return true;
         }
     }
+
     private void Result()
     {
         bool win = WinCheck();
         bool tie = IsGridFilled();
         if (win || tie) uiHandler.ShowGameResult(win, xTurn);
     }
+
     public bool WinCheck()
     {
         foreach (int[] combination in winningCombinations)
@@ -82,6 +88,7 @@ public class GameController : MonoBehaviour
         }
         return false;
     }
+
     public void ButtonPressed(int[] id, Symbols symbol)
     {
         int row = id[0];
