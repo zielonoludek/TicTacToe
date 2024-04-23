@@ -63,14 +63,9 @@ public class GameController : MonoBehaviour
     }
     private void Result()
     {
-        if (IsGridFilled())
-        {
-            uiHandler.ShowGameResult(true, xTurn);
-        }
-        else if (WinCheck())
-        {
-            uiHandler.ShowGameResult(false, xTurn);
-        }
+        bool win = WinCheck();
+        bool tie = IsGridFilled();
+        if (win || tie) uiHandler.ShowGameResult(win, xTurn);
     }
     public bool WinCheck()
     {

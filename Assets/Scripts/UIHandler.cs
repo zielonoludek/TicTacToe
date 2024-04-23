@@ -38,13 +38,13 @@ public class UIHandler : MonoBehaviour
         GameController.instance.ResetStatesArray();
         ChangeButtonEnableState(true);
     }
-    public void ShowGameResult(bool tie, bool xTurn)
+    public void ShowGameResult(bool win, bool xTurn)
     {
         resultImage.gameObject.SetActive(true);
         SetSprite(resultImage, Symbols.Empty);
         ChangeButtonEnableState(false);
 
-        if (!tie)
+        if (win)
         {
             resultInfo.text = "winner";
             if (xTurn) SetSprite(resultImage, Symbols.Cross);
