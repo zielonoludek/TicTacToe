@@ -7,6 +7,8 @@ public class UIHandler : MonoBehaviour
     [SerializeField] private GameObject gamePanel;
     [SerializeField] private GameObject menuPanel;
     [SerializeField] private GameObject infoPanel;
+    [SerializeField] private GameObject pausePanel;
+    [SerializeField] private Button pauseButton;
     [SerializeField] private List<Sprite> sprites = new List<Sprite>();
 
     private Text resultInfo;
@@ -17,9 +19,15 @@ public class UIHandler : MonoBehaviour
     {
         resultInfo = infoPanel.GetComponentInChildren<Text>();
         resultImage = infoPanel.GetComponentInChildren<Image>();
+
+        pauseButton.onClick.RemoveAllListeners();
+        pauseButton.onClick.AddListener(() => GameController.instance.TogglePause());
+
         GameButtonsToArray();
         ChangeButtonEnableState(false);
+        
         Menu();
+        PauseMenu();
     }
 
     private void Menu()
@@ -28,6 +36,7 @@ public class UIHandler : MonoBehaviour
         menuPanel.SetActive(true);
 
         Button button = menuPanel.GetComponentInChildren<Button>();
+        button.onClick.RemoveAllListeners();
         button.onClick.AddListener(StartGame);
     }
 
@@ -58,9 +67,23 @@ public class UIHandler : MonoBehaviour
 
         Menu();
     }
-
+    private void PauseMenu()
+    {
+        Button button = pausePanel.GetComponentInChildren<Button>();
+        
+        button.onClick.RemoveAllListeners();
+        button.onClick.AddListener(() => GameController.instance.TogglePause());
+    }
+    public void TogglePauseMenu(bool isPaused)
+    {
+        pausePanel.SetActive(isPaused);
+        if (isPaused) pauseButton.GetComponentInChildren<Text>().text = ">";
+        else pauseButton.GetComponentInChildren<Text>().text = "||";
+    }
     private void OnButtonClick(Button button, int[] id)
     {
+        if (GameController.instance.isPaused) return;
+        
         Symbols buttonState = SetButtonSymbol(GameController.instance.xTurn, button);
         GameController.instance.ButtonPressed(id, buttonState);
     }
