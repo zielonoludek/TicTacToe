@@ -178,4 +178,18 @@ public class UIHandler : MonoBehaviour
 
         }
     }
+    public void UpdateButtonUI(int row, int col, Symbols symbol)
+    {
+        SetSprite(buttons[row][col], symbol);
+        buttons[row][col].enabled = symbol == Symbols.Empty;
+    }
+    public string GetResultText()
+    {
+        return resultInfo.text;
+    }
+
+    public void SetResultText(string text)
+    {
+        resultInfo.text = text;
+    }
 }

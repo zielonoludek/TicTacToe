@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class ActionStack
 {
-    private Stack<Action> actionStack = new Stack<Action>();
-    private Stack<Action> redoStack = new Stack<Action>();
+    private Stack<(Action execute, Action undo)> actionStack = new Stack<(Action, Action)>();
+    private Stack<(Action execute, Action undo)> redoStack = new Stack<(Action, Action)>();
 
     public void Do(Action execute, Action undo)
     {
         execute.Invoke();
-        actionStack.Push(undo);
+        actionStack.Push((execute, undo));
         redoStack.Clear();
     }
 
@@ -18,9 +18,9 @@ public class ActionStack
     {
         if (actionStack.Count > 0)
         {
-            Action undoAction = actionStack.Pop();
-            undoAction.Invoke();
-            redoStack.Push(undoAction);
+            var action = actionStack.Pop();
+            action.undo.Invoke();
+            redoStack.Push(action);
         }
     }
 
@@ -28,9 +28,15 @@ public class ActionStack
     {
         if (redoStack.Count > 0)
         {
-            Action redoAction = redoStack.Pop();
-            redoAction.Invoke();
-            actionStack.Push(redoAction);
+            var action = redoStack.Pop();
+            action.execute.Invoke();
+            actionStack.Push(action);
         }
+    }
+
+    public void Clear()
+    {
+        actionStack.Clear();
+        redoStack.Clear();
     }
 }

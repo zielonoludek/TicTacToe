@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.IO;
 
 public class GameController : MonoBehaviour
 {
@@ -36,9 +37,16 @@ public class GameController : MonoBehaviour
         uiHandler = FindFirstObjectByType<UIHandler>();
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.U)) UndoMove();
+        if (Input.GetKeyDown(KeyCode.R)) RedoMove();
+
+    }
     public void ResetStatesArray()
     {
         xTurn = true;
+        actionStack.Clear();
         for (int row = 0; row < 3; row++)
         {
             buttonsState[row] = new Symbols[3];
@@ -56,12 +64,22 @@ public class GameController : MonoBehaviour
         int row = id[0];
         int col = id[1];
         Symbols previousState = buttonsState[row][col];
+        string previousText = uiHandler.GetResultText();
 
         actionStack.Do(
-            () => buttonsState[row][col] = symbol,
-            () => buttonsState[row][col] = previousState
+            () =>
+            {
+                buttonsState[row][col] = symbol;
+                uiHandler.UpdateButtonUI(row, col, symbol);
+                uiHandler.SetResultText(xTurn ? "o" : "x"); 
+            },
+            () =>
+            {
+                buttonsState[row][col] = previousState;
+                uiHandler.UpdateButtonUI(row, col, previousState);
+                uiHandler.SetResultText(previousText); 
+            }
         );
-
         Result();
         xTurn = !xTurn;
     }
@@ -70,6 +88,16 @@ public class GameController : MonoBehaviour
     {
         if (isPaused) return;
         actionStack.Undo();
+        xTurn = !xTurn;
+        uiHandler.SetResultText(xTurn ? "x" : "o");
+    }
+
+
+
+    public void RedoMove()
+    {
+        if (isPaused) return;
+        actionStack.Redo();
         xTurn = !xTurn;
     }
 
