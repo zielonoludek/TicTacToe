@@ -9,6 +9,7 @@ public class GameController : MonoBehaviour
 
     public bool xTurn;
     public bool isPaused = false;
+    private bool gameOver = false;
 
     private Symbols[][] buttonsState = new Symbols[3][];
 
@@ -37,15 +38,10 @@ public class GameController : MonoBehaviour
         uiHandler = FindFirstObjectByType<UIHandler>();
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.U)) UndoMove();
-        if (Input.GetKeyDown(KeyCode.R)) RedoMove();
-
-    }
     public void ResetStatesArray()
     {
         xTurn = true;
+        gameOver = false;
         actionStack.Clear();
         for (int row = 0; row < 3; row++)
         {
@@ -57,9 +53,35 @@ public class GameController : MonoBehaviour
         }
     }
 
+    public void PauseGame()
+    {
+        if (!isPaused)
+        {
+            isPaused = true; 
+            actionStack.Do(
+                () => uiHandler.TogglePauseMenu(true),
+                () => uiHandler.TogglePauseMenu(false),
+                true 
+            );
+        }
+    }
+
+    public void ResumeGame()
+    {
+        if (isPaused)
+        {
+            isPaused = false; 
+            actionStack.Do(
+                () => uiHandler.TogglePauseMenu(false),
+                () => uiHandler.TogglePauseMenu(true),
+                true 
+            );
+        }
+    }
+
     public void ButtonPressed(int[] id, Symbols symbol)
     {
-        if (isPaused) return;
+        if (isPaused || gameOver) return;
 
         int row = id[0];
         int col = id[1];
@@ -71,13 +93,13 @@ public class GameController : MonoBehaviour
             {
                 buttonsState[row][col] = symbol;
                 uiHandler.UpdateButtonUI(row, col, symbol);
-                uiHandler.SetResultText(xTurn ? "o" : "x"); 
+                uiHandler.SetResultText(xTurn ? "o" : "x");
             },
             () =>
             {
                 buttonsState[row][col] = previousState;
                 uiHandler.UpdateButtonUI(row, col, previousState);
-                uiHandler.SetResultText(previousText); 
+                uiHandler.SetResultText(previousText);
             }
         );
         Result();
@@ -86,32 +108,28 @@ public class GameController : MonoBehaviour
 
     public void UndoMove()
     {
-        if (isPaused) return;
+        if (isPaused || gameOver || actionStack.IsEmpty()) return;
         actionStack.Undo();
         xTurn = !xTurn;
         uiHandler.SetResultText(xTurn ? "x" : "o");
     }
 
-
-
     public void RedoMove()
     {
-        if (isPaused) return;
+        if (isPaused || gameOver || actionStack.IsEmpty()) return;
         actionStack.Redo();
         xTurn = !xTurn;
-    }
-
-    public void TogglePause()
-    {
-        isPaused = !isPaused;
-        uiHandler.TogglePauseMenu(isPaused);
     }
 
     private void Result()
     {
         bool win = WinCheck();
         bool tie = IsGridFilled();
-        if (win || tie) uiHandler.ShowGameResult(win, xTurn);
+        if (win || tie)
+        {
+            gameOver = true;
+            uiHandler.ShowGameResult(win, xTurn);
+        }
     }
 
     private bool IsGridFilled()

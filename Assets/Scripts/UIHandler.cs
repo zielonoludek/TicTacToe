@@ -7,8 +7,11 @@ public class UIHandler : MonoBehaviour
     [SerializeField] private GameObject gamePanel;
     [SerializeField] private GameObject menuPanel;
     [SerializeField] private GameObject infoPanel;
-    [SerializeField] private GameObject pausePanel;
+
     [SerializeField] private Button pauseButton;
+    [SerializeField] private Button redoButton;
+    [SerializeField] private Button undoButton;
+
     [SerializeField] private List<Sprite> sprites = new List<Sprite>();
 
     private Text resultInfo;
@@ -20,14 +23,28 @@ public class UIHandler : MonoBehaviour
         resultInfo = infoPanel.GetComponentInChildren<Text>();
         resultImage = infoPanel.GetComponentInChildren<Image>();
 
+        redoButton.onClick.RemoveAllListeners();
+        undoButton.onClick.RemoveAllListeners();
         pauseButton.onClick.RemoveAllListeners();
-        pauseButton.onClick.AddListener(() => GameController.instance.TogglePause());
+
+        pauseButton.onClick.AddListener(() =>
+        {
+            if (GameController.instance.isPaused)
+            {
+                GameController.instance.ResumeGame();
+            }
+            else
+            {
+                GameController.instance.PauseGame();
+            }
+        });
+        redoButton.onClick.AddListener(() => GameController.instance.RedoMove());
+        undoButton.onClick.AddListener(() => GameController.instance.UndoMove());
 
         GameButtonsToArray();
         ChangeButtonEnableState(false);
-        
+
         Menu();
-        PauseMenu();
     }
 
     private void Menu()
@@ -67,18 +84,18 @@ public class UIHandler : MonoBehaviour
 
         Menu();
     }
-    private void PauseMenu()
-    {
-        Button button = pausePanel.GetComponentInChildren<Button>();
-        
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(() => GameController.instance.TogglePause());
-    }
     public void TogglePauseMenu(bool isPaused)
     {
-        pausePanel.SetActive(isPaused);
-        if (isPaused) pauseButton.GetComponentInChildren<Text>().text = ">";
-        else pauseButton.GetComponentInChildren<Text>().text = "||";
+        if (isPaused)
+        {
+            resultInfo.text = "Paused";
+            pauseButton.GetComponentInChildren<Text>().text = ">";
+        }
+        else
+        {
+            resultInfo.text = GameController.instance.xTurn ? "x" : "o"; 
+            pauseButton.GetComponentInChildren<Text>().text = "||";
+        }
     }
     private void OnButtonClick(Button button, int[] id)
     {
