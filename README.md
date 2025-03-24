@@ -1,7 +1,5 @@
-## **Game Build [zielonoludek.itch.io/TicTacToe](https://zielonoludek.itch.io/tic-tac-toe)**
-
 ### Used Technologies:
-- Unity - Editor 2022.3.10f1
+- Action stack
 - WebGL Package
 
 ### Used Assets: 
